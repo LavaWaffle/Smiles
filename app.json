@@ -16,6 +16,15 @@
       ]
     ],
     "name": "Smiles",
-    "slug": "Smiles"
+    "slug": "smiles",
+    "extra": {
+      "router": {
+        "origin": "https://n"
+      },
+      "eas": {
+        "projectId": "6a1894c2-8174-40c7-aa8c-fde7842dbc8c"
+      }
+    },
+    "owner": "lavawaffle"
   }
 }
