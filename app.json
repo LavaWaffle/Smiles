@@ -25,6 +25,9 @@
         "projectId": "6a1894c2-8174-40c7-aa8c-fde7842dbc8c"
       }
     },
-    "owner": "lavawaffle"
+    "owner": "lavawaffle",
+    "android": {
+      "package": "com.lavawaffle.smiles"
+    }
   }
 }
