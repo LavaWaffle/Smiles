@@ -1,13 +1,46 @@
 import { View, Text, Dimensions, Pressable, Platform } from "react-native";
-import React from "react";
+import React, { Fragment } from "react";
 import { FlashList } from "@shopify/flash-list";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 const DATA = [
   {
-    title: "First Item",
+    backgroundImg: require("assets/feed/Card1.png"),
+    profileImg: require("assets/feed/Profile1.png"),
+    name: "Kat Williams",
+    location: "Hopewell Valley Central HS",
+    description: "I design experiences mostly. I also sometimes travel.",
+    isPerson: true,
+    highlights: [
+      {
+        imageSrc: require("assets/feed/Connection1.png"),
+        title: "23 Mutual Connections",
+        caption: "You both know Luna grey, Marion Bochelli, and 21 others",
+      },
+      {
+        imageSrc: require("assets/feed/Interest1.png"),
+        title: "Interests",
+        caption: "You both like Volleyball and Volunteering",
+      },
+    ],
+    descriptions: [],
   },
   {
-    title: "Second Item",
+    backgroundImg: require("assets/feed/Card2.png"),
+    profileImg: require("assets/feed/Profile2.png"),
+    name: "Capital Health",
+    location: "NJ District",
+    description:
+      "Want an opportunity to enter the medical field? Join our Junior internship program!",
+    isPerson: false,
+    highlights: [],
+    descriptions: [
+      "Gain hands-on healthcare experience",
+      "Work with nurses and Shadow doctors",
+      "Flexible part-time hours",
+      "Ideal for high school students",
+      "Must be aged 16 or older",
+      "Unpaid",
+    ],
   },
 ];
 
@@ -23,7 +56,9 @@ const feed = () => {
         showsVerticalScrollIndicator={false}
         horizontal={false}
         pagingEnabled={true}
-        renderItem={({ item }) => <Card height={screenHeight - height} />}
+        renderItem={({ item }) => (
+          <Card height={screenHeight - height} {...item} />
+        )}
         estimatedItemSize={2}
       />
     </View>
@@ -34,12 +69,35 @@ export default feed;
 
 import { Image } from "expo-image";
 
-function Card(props: { height: number }) {
-  const { height } = props;
+function Card(props: {
+  height: number;
+  backgroundImg: NodeRequire;
+  profileImg: NodeRequire;
+  name: string;
+  location: string;
+  description: string;
+  isPerson: boolean;
+  highlights: { imageSrc: NodeRequire; title: string; caption: string }[];
+  descriptions: string[];
+}) {
+  const {
+    height,
+    backgroundImg,
+    profileImg,
+    name,
+    location,
+    description,
+    isPerson,
+    highlights,
+    descriptions,
+  } = props;
 
-  const isPerson: boolean = true;
+  // const isPerson: boolean = true;
 
-  console.log(Platform.OS);
+  // console.log(Platform.OS);
+
+  let backgroundImgStr = backgroundImg as unknown as string;
+  let profileImgStr = profileImg as unknown as string;
 
   return (
     <View
@@ -53,15 +111,12 @@ function Card(props: { height: number }) {
           style={{ width: "100%", height: "100%" }}
           blurRadius={3}
           // className="w-full h-full object-cover"
-          source={require("assets/feed/Card1.png")}
+          source={backgroundImgStr}
           contentFit="cover"
         />
         {/* PROFILE */}
         <View className="absolute top-[1.5rem] right-0 left-0 bottom-0 justify-center items-center">
-          <Image
-            style={{ width: 150, height: 150 }}
-            source={require("assets/feed/Profile1.png")}
-          />
+          <Image style={{ width: 150, height: 150 }} source={profileImgStr} />
         </View>
         {/* HAMBURGER MENU */}
         <View className="absolute top-12 right-3">
@@ -78,7 +133,7 @@ function Card(props: { height: number }) {
         style={{ fontFamily: "Poppins_600SemiBold" }}
         className="text-white text-[30px]"
       >
-        Kat Williams
+        {name}
       </Text>
       {/* spacer */}
       <View className="h-[-10px]" />
@@ -87,7 +142,7 @@ function Card(props: { height: number }) {
         style={{ fontFamily: "Poppins_500Medium" }}
         className="text-[#727477] text-[13px] ios:text-[12px] android:mt-[-10px] mt-[-3px]"
       >
-        Hopewell Valley Central HS
+        {location}
       </Text>
       {/* spacer */}
       <View className="h-[5px]" />
@@ -96,26 +151,36 @@ function Card(props: { height: number }) {
         style={{ fontFamily: "Poppins_400Regular" }}
         className="text-[#ECEBED] text-[13px] android:text-[14px] text-center px-6 android:px-8"
       >
-        I design experiences mostly. I also sometimes travel.
+        {description}
       </Text>
       {/* spacer */}
       <View className="h-[15px]" />
       {/* View Profile */}
       <Pressable
-        onPress={(e) => {}}
-        className="bg-[#F62E8E] py-2 w-[12rem] rounded-full"
+        onPress={(e) => {
+          console.log(name);
+        }}
+        className={`${
+          isPerson
+            ? "bg-[#F62E8E] active:bg-[#f952a3]"
+            : "bg-[#2E8AF6] active:bg-[#4b97ed]"
+        }  py-2 w-[12rem] rounded-full transition-colors`}
       >
         <Text
           style={{ fontFamily: "Poppins_700Bold" }}
-          className="text-white text-[16px]  text-center"
+          className="text-white text-[16px]  text-center android:mb-[-3px]"
         >
-          View Profile
+          {isPerson ? "View Profile" : "Connect"}
         </Text>
       </Pressable>
       {/* spacer */}
       <View className="h-[20px] android:h-[20px]" />
       {/* Bar */}
-      <View className="w-[92%] h-[2px] rounded-lg bg-[#F62E8E] opacity-50" />
+      <View
+        className={`w-[92%] h-[2px] rounded-lg ${
+          isPerson ? "bg-[#F62E8E]" : "bg-[#2E8AF6]"
+        } opacity-50"`}
+      />
       {/* spacer */}
       <View className="h-[15px]" />
       {/* Highlights / Desc */}
@@ -128,66 +193,68 @@ function Card(props: { height: number }) {
             Highlights
           </Text>
 
-          {/* spacer */}
-          <View className="h-[15px]" />
+          {highlights.map((hightlight) => {
+            let { imageSrc, title, caption } = hightlight;
+            let imageSrcStr = imageSrc as unknown as string;
+            return (
+              <Fragment key={title}>
+                {/* spacer */}
+                <View className="h-[15px]" />
 
-          {/* Connections */}
-          <View className="flex flex-row w-full  h-16">
-            <View className="aspect-square grow-0 h-5 w-[4rem]">
-              <Image
-                source={require("assets/feed/Connection1.png")}
-                style={{ width: 50, height: 50 }}
-              />
-            </View>
-            {/* spacer */}
-            <View className="w-3" />
-            <View className="grow w-full h-full flex r-4">
-              <Text
-                style={{ fontFamily: "Poppins_700Bold" }}
-                className="text-white text-[15px]"
-              >
-                23 Mutual Connections
-              </Text>
-              <Text
-                className="text-wrap text-[13px] pr-4 text-[#C4C4C4] opacity-50"
-                style={{ fontFamily: "Poppins_400Regular" }}
-              >
-                You both know Luna grey, Marion Bochelli, and 21 others
-              </Text>
-            </View>
-          </View>
-
-          {/* spacer */}
-          <View className="h-[15px]" />
-
-          {/* interests */}
-          <View className="flex flex-row w-full  h-16">
-            <View className="aspect-square grow-0 h-5 w-[4rem]">
-              <Image
-                source={require("assets/feed/Interest1.png")}
-                style={{ width: 50, height: 50 }}
-              />
-            </View>
-            {/* spacer */}
-            <View className="w-3" />
-            <View className="grow w-full h-full flex r-4">
-              <Text
-                style={{ fontFamily: "Poppins_700Bold" }}
-                className="text-white text-[15px]"
-              >
-                Interests
-              </Text>
-              <Text
-                className="text-wrap text-[13px] pr-4 text-[#C4C4C4] opacity-50"
-                style={{ fontFamily: "Poppins_400Regular" }}
-              >
-                You both like Volleyball and Volunteering
-              </Text>
-            </View>
-          </View>
+                {/* highlight */}
+                <View className="flex flex-row w-full  h-16">
+                  <View className="aspect-square grow-0 h-5 w-[4rem]">
+                    <Image
+                      source={imageSrcStr}
+                      style={{ width: 50, height: 50 }}
+                    />
+                  </View>
+                  {/* spacer */}
+                  <View className="w-3" />
+                  <View className="grow w-full h-full flex r-4">
+                    <Text
+                      style={{ fontFamily: "Poppins_700Bold" }}
+                      className="text-white text-[15px]"
+                    >
+                      {title}
+                    </Text>
+                    <Text
+                      className="text-wrap text-[13px] pr-4 text-[#C4C4C4] opacity-50"
+                      style={{ fontFamily: "Poppins_400Regular" }}
+                    >
+                      {caption}
+                    </Text>
+                  </View>
+                </View>
+              </Fragment>
+            );
+          })}
         </View>
       ) : (
-        <View></View>
+        <View className="w-[80%] ml-[-1.5rem]">
+          <Text
+            style={{ fontFamily: "Poppins_500Medium" }}
+            className="text-white text-[16px] text-left"
+          >
+            Description
+          </Text>
+
+          {descriptions.map((desc) => {
+            return (
+              <Fragment key={desc}>
+                {/* spacer */}
+                <View className="h-[2px]" />
+                {/* desc */}
+                <Text
+                  style={{ fontFamily: "Poppins_400Regular" }}
+                  className="text-[#C4C4C4] text-[13px] ios:text-[11px] ml-[10px] android:ml-[8px]"
+                >
+                  - {desc}
+                </Text>
+              </Fragment>
+            );
+          })}
+        </View>
       )}
       {/* scroll for more! */}
       {Platform.OS == "android" && (
