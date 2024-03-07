@@ -5,17 +5,34 @@ import {
   TabBarIconImage,
   TabBarIconImageEnum,
 } from "components/TabBarIconImage";
+import { useState } from "react";
 
 export default () => {
+  const [prevState, setPrevState] = useState<number>(0);
   return (
     <Tabs
+      screenListeners={{
+        state: (e: any) => {
+          const newTabIndex = e.data.state.index;
+          setPrevState(newTabIndex);
+        },
+      }}
       screenOptions={{
-        tabBarStyle: { backgroundColor: "black", paddingTop: 5 },
+        tabBarStyle: {
+          backgroundColor: "black",
+          paddingTop: 5,
+          borderWidth: 0,
+          margin: 0,
+        },
+      }}
+      sceneContainerStyle={{
+        backgroundColor: "#181A1C",
       }}
     >
       <Tabs.Screen
         name="feed"
         options={{
+          headerShown: false,
           tabBarShowLabel: false,
           tabBarIcon: ({ focused, color, size }) => (
             <TabBarIconImage
