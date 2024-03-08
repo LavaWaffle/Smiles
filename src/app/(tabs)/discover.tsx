@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {
   StyleSheet,
@@ -24,31 +24,36 @@ function SearchBar(props: {
       <View
         className={
           clicked
-            ? "p-[10px] flex flex-row w-[70%] bg-[#323436] rounded-[10%] items-center justify-evenly"
+            ? "p-[10px] flex flex-row w-[75%] bg-[#323436] rounded-[10%] items-center justify-evenly"
             : "p-[10px] flex flex-row w-[95%] bg-[#323436] rounded-[10%] items-center"
         }
       >
-        <Feather
+        {!clicked && <Feather
           name="search"
-          size={20}
+          size={25}
           color="#727477"
-          style={{ marginLeft: 4, marginRight: 4 }}
-        />
+          style={{ paddingLeft: 4, marginRight: 4 }}
+        />}
         <TextInput
           className="text-[20px] ml-[10px] w-[90%] text-[#ECEBED]"
           placeholder="Search"
           placeholderTextColor="#A2A2A2"
           value={searchPhrase}
           onChangeText={setSearchPhrase}
+          onSubmitEditing={() => {
+            Keyboard.dismiss();
+            setClicked(false);
+          }}
           onFocus={() => setClicked(true)}
         />
         {clicked && (
           <Entypo
             name="cross"
-            size={20}
-            color="black"
-            className="focus:bg-transparent"
-            style={{ padding: 1 }}
+            size={25}
+            color="#727477"
+            className="focus:bg-transparent active:text-white"
+            style={{ padding: 0, marginRight: 4 }}
+            suppressHighlighting={true}
             onPress={() => {
               setSearchPhrase("");
             }}
@@ -74,6 +79,7 @@ const discover = () => {
   const [searchPhrase, setSearchPhrase] = useState("");
   const [clicked, setClicked] = useState(false);
   const [fakeData, setFakeData] = useState();
+
   return (
     <SafeAreaView>
       <SearchBar
