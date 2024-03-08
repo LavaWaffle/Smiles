@@ -11,6 +11,7 @@ export default () => {
   const [prevState, setPrevState] = useState<number>(0);
   return (
     <Tabs
+      
       screenListeners={{
         state: (e: any) => {
           const newTabIndex = e.data.state.index;
@@ -47,6 +48,7 @@ export default () => {
       <Tabs.Screen
         name="discover"
         options={{
+          headerShown: false,
           tabBarShowLabel: false,
           tabBarIcon: ({ focused, color, size }) => (
             <TabBarIconImage

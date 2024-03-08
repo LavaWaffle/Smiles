@@ -28,6 +28,9 @@
     "owner": "lavawaffle",
     "android": {
       "package": "com.lavawaffle.smiles"
+    },
+    "ios": {
+      "bundleIdentifier": "com.lavawaffle.smiles"
     }
   }
 }

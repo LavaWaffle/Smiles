@@ -2,7 +2,7 @@
 import { Redirect } from "expo-router";
 
 export default function Page() {
-  return <Redirect href="/feed" />;
+  return <Redirect href="/discover" />;
 }
 
 // import { Link } from "expo-router";
