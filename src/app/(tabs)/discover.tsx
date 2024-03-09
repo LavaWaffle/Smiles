@@ -161,7 +161,7 @@ function SearchBar(props: {
   );
 }
 
-function Chip(props: {
+export function Chip(props: {
   text: string;
   clicked: boolean;
   onClick: any;
