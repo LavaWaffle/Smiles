@@ -23,6 +23,7 @@ import { FlashList } from "@shopify/flash-list";
 
 import Carousel from "react-native-reanimated-carousel";
 import { AVPlaybackSource, Video } from "expo-av";
+import { Link, Navigator, router } from "expo-router";
 
 // Animated.addWhitelistedUIProps({ className: true, style: true });
 
@@ -68,7 +69,7 @@ function SearchBar(props: {
   }, [clicked]);
 
   return (
-    <View className="m-[15px] flex flex-row items-center justify-center grow-0">
+    <View className="m-[15px] flex flex-row items-center justify-center">
       <Animated.View
         style={{
           width: SearchBarWidth,
@@ -182,7 +183,7 @@ function Chip(props: {
 
 const chipData = ["All", "Robotics", "FBLA", "Sports", "HOSA", "DECA"];
 
-type post = {
+export type post = {
   author: string;
   timeAgo: string;
   description: string;
@@ -193,7 +194,7 @@ type post = {
   content: [boolean, NodeRequire][];
 };
 
-const postData: post[] = [
+export const postData: post[] = [
   {
     author: "Michelle Ogilvy",
     timeAgo: "1h ago",
@@ -208,13 +209,38 @@ const postData: post[] = [
       [true, require("assets/discover/ArtVideo.mp4")], // "https://youtu.be/ETd5izCJMik",
     ],
   },
+  {
+    author: "Brandon Loia",
+    timeAgo: "2h ago",
+    description: "Here’s my new laptop for College!",
+    likes: "4.7k",
+    comments: "1.2k",
+    shares: "3.4k",
+    profilePic: require("assets/discover/ProfilePic2.png"),
+    content: [[false, require("assets/discover/CollegeContent1.png")]],
+  },
+  {
+    author: "Brandon Loia",
+    timeAgo: "2h ago",
+    description: "Here’s my new laptop for College!",
+    likes: "4.7k",
+    comments: "1.2k",
+    shares: "3.4k",
+    profilePic: require("assets/discover/ProfilePic2.png"),
+    content: [[false, require("assets/discover/CollegeContent1.png")]],
+  },
 ];
 
 const AniFeather = Animated.createAnimatedComponent(Feather);
 const AniAntDesign = Animated.createAnimatedComponent(AntDesign);
 const AniEntypo = Animated.createAnimatedComponent(Entypo);
 
-function Post(props: post) {
+type FuncPost = post & {
+  addLinks?: boolean;
+  defaultIndex?: number;
+};
+
+export function Post(props: FuncPost) {
   const {
     author,
     timeAgo,
@@ -224,9 +250,11 @@ function Post(props: post) {
     shares,
     profilePic,
     content,
+    addLinks = true,
+    defaultIndex = 0,
   } = props;
 
-  const [index, setIndex] = useState(0);
+  const [index, setIndex] = useState(defaultIndex);
 
   const likeSharedValue = useSharedValue(0);
   const likeProps = useAnimatedStyle(() => {
@@ -265,7 +293,7 @@ function Post(props: post) {
   });
 
   return (
-    <View className="w-[90%] mx-auto">
+    <View className="w-[90%] mx-auto mt-4" key={author}>
       {/* Profile */}
       <View className="flex flex-row w-full">
         <Image
@@ -314,34 +342,51 @@ function Post(props: post) {
       <View className="h-3" />
 
       {/* Carosel */}
-      <Carousel
-        vertical={false}
-        width={327}
-        height={180}
-        loop={true}
-        data={content}
-        renderItem={({ item }) => {
-          return item[0] ? (
-            <Video
-              source={item[1] as unknown as AVPlaybackSource}
-              shouldPlay={true}
-              style={{ width: 287, height: 180 }}
-              onError={(e) => {
-                console.log(e);
-              }}
-            />
-          ) : (
-            <Image
-              source={item[1] as unknown as string}
-              style={{ width: 287, height: 180 }}
-            />
-          );
+      <Pressable
+        onPress={() => {
+          if (!addLinks) return;
+          console.log(addLinks);
+          router.push({
+            pathname: "/discover/[id]",
+            params: {
+              postIndex: postData.findIndex((e) => e.author == author),
+              contentIndex: index,
+            },
+          });
         }}
-        onSnapToItem={(index) => {
-          // console.log(index);
-          setIndex(index);
-        }}
-      />
+      >
+        <Carousel
+          defaultIndex={defaultIndex}
+          vertical={false}
+          width={327}
+          height={180}
+          loop={true}
+          data={content}
+          enabled={content.length > 1}
+          renderItem={({ item }) => {
+            return item[0] ? (
+              <Video
+                source={item[1] as unknown as AVPlaybackSource}
+                shouldPlay={true}
+                isLooping={true}
+                style={{ width: 287, height: 180 }}
+                onError={(e) => {
+                  console.log(e);
+                }}
+              />
+            ) : (
+              <Image
+                source={item[1] as unknown as string}
+                style={{ width: 287, height: 180 }}
+              />
+            );
+          }}
+          onSnapToItem={(index) => {
+            // console.log(index);
+            setIndex(index);
+          }}
+        />
+      </Pressable>
 
       {/* spacer */}
       <View className="h-3" />
@@ -409,7 +454,19 @@ function Post(props: post) {
             </Text>
           </Pressable>
 
-          <Pressable className="flex flex-row ml-4">
+          <Pressable
+            className="flex flex-row ml-4"
+            onPress={() => {
+              if (!addLinks) return;
+              router.push({
+                pathname: "/discover/[id]",
+                params: {
+                  postIndex: postData.findIndex((e) => e.author == author),
+                  contentIndex: index,
+                },
+              });
+            }}
+          >
             <AniAntDesign
               name="message1"
               size={20}
@@ -461,6 +518,12 @@ function Post(props: post) {
           </Pressable>
         </View>
       </View>
+
+      {/* spacer */}
+      <View className="h-5" />
+
+      {/* Bar */}
+      <View className="w-[200vw] ml-[-5%] h-[1px] bg-[#323436]" />
     </View>
   );
 }
@@ -487,7 +550,7 @@ const discover = () => {
       />
 
       {/* Chips */}
-      <View className="mt-1 grow-0">
+      <View className="mt-1">
         <FlatList
           data={chipData}
           horizontal={true}
@@ -508,7 +571,7 @@ const discover = () => {
       </View>
 
       {/* spacer */}
-      <View className="h-8 grow-0" />
+      <View className="h-4" />
 
       {/* Posts */}
       <View className="w-full h-full">
@@ -517,6 +580,8 @@ const discover = () => {
           showsVerticalScrollIndicator={false}
           horizontal={false}
           estimatedItemSize={postData.length}
+          pagingEnabled={true}
+          snapToInterval={300}
           renderItem={({ item }) => <Post {...item} />}
         />
       </View>
