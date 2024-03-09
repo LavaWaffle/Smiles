@@ -68,6 +68,7 @@ const feed = () => {
 export default feed;
 
 import { Image } from "expo-image";
+import { router } from "expo-router";
 
 function Card(props: {
   height: number;
@@ -159,6 +160,7 @@ function Card(props: {
       <Pressable
         onPress={(e) => {
           console.log(name);
+          if (!isPerson) router.push("/shareResumate");
         }}
         className={`${
           isPerson
