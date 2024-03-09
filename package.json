@@ -21,6 +21,7 @@
     "expo-image": "^1.10.6",
     "expo-linking": "~6.2.1",
     "expo-router": "~3.4.1",
+    "expo-sharing": "^11.10.0",
     "expo-splash-screen": "~0.26.1",
     "expo-status-bar": "~1.11.1",
     "install": "^0.13.0",

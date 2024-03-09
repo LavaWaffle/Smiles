@@ -31,7 +31,10 @@ import { FlashList, ListRenderItemInfo } from "@shopify/flash-list";
 
 import Carousel from "react-native-reanimated-carousel";
 import { AVPlaybackSource, Video } from "expo-av";
-import { Link, Navigator, router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
+
+import * as Sharing from "expo-sharing";
+import * as FileSystem from "expo-file-system";
 
 // Animated.addWhitelistedUIProps({ className: true, style: true });
 
@@ -199,7 +202,7 @@ export type post = {
   comments: string;
   shares: string;
   profilePic: NodeRequire;
-  content: [boolean, NodeRequire][];
+  content: [boolean, NodeRequire | string][];
 };
 
 export const postData: post[] = [
@@ -228,7 +231,7 @@ export const postData: post[] = [
     content: [[false, require("assets/discover/CollegeContent1.png")]],
   },
   {
-    author: "Brandon Loia",
+    author: "Brandon Loifa",
     timeAgo: "2h ago",
     description: "Here’s my new laptop for College!",
     likes: "4.7k",
@@ -301,7 +304,11 @@ export function Post(props: FuncPost) {
   });
 
   return (
-    <View className="w-[90%] mx-auto mt-4" key={author}>
+    <Animated.View
+      className="w-[90%] mx-auto mt-4"
+      key={author}
+      entering={FadeIn}
+    >
       {/* Profile */}
       <View className="flex flex-row w-full">
         <Image
@@ -381,6 +388,11 @@ export function Post(props: FuncPost) {
                 onError={(e) => {
                   console.log(e);
                 }}
+              />
+            ) : typeof item[1] === "string" ? (
+              <Image
+                source={{ uri: item[1] as unknown as string }}
+                style={{ width: 287, height: 180 }}
               />
             ) : (
               <Image
@@ -491,11 +503,23 @@ export function Post(props: FuncPost) {
 
           <Pressable
             className="flex flex-row ml-4"
-            onPress={() => {
+            onPress={async () => {
               shareSharedValue.value = withTiming(
                 shareSharedValue.value ? 0 : 1,
                 { duration: 250 }
               );
+              const downloadResumable = FileSystem.createDownloadResumable(
+                "https://smb.ibsrv.net/imageresizer/image/blog_images/1200x1200/59846/176287/0044181001582748537.jpg",
+                FileSystem.documentDirectory + "arch.jpg"
+              );
+
+              try {
+                const { uri } = await downloadResumable.downloadAsync();
+                console.log("Finished downloading to ", uri);
+                Sharing.shareAsync(uri);
+              } catch (e) {
+                console.error(e);
+              }
             }}
           >
             <AniEntypo name="share" size={20} animatedProps={shareProps} />
@@ -532,7 +556,7 @@ export function Post(props: FuncPost) {
 
       {/* Bar */}
       <View className="w-[200vw] ml-[-5%] h-[1px] bg-[#323436]" />
-    </View>
+    </Animated.View>
   );
 }
 
@@ -693,6 +717,29 @@ const discover = () => {
     // console.log(searchResults);
   }, [searchOptions, searchPhrase]);
 
+  const [newPostData, setNewPostData] = useState<post[]>(postData);
+  const local = useLocalSearchParams();
+  if (local.image) {
+    console.log(local.image, local.text);
+    if (newPostData.length <= postData.length) {
+      setTimeout(() => {
+        setNewPostData([
+          {
+            author: "You",
+            timeAgo: "Just now",
+            description: local.text as string,
+            likes: "0",
+            comments: "0",
+            shares: "0",
+            profilePic: require("assets/discover/ProfilePic2.png"),
+            content: [[false, local.image as string]],
+          },
+          ...postData,
+        ]);
+      }, 10);
+    }
+  }
+
   return (
     <SafeAreaView className="flex flex-col h-full">
       <SearchBar
@@ -799,12 +846,13 @@ const discover = () => {
         {/* Posts */}
         <View className="w-full h-full">
           <FlashList
-            data={postData}
+            data={newPostData}
             showsVerticalScrollIndicator={false}
             horizontal={false}
             estimatedItemSize={postData.length}
             pagingEnabled={true}
             snapToInterval={300}
+            keyExtractor={(item) => item.author}
             renderItem={({ item }) => <Post {...item} />}
           />
         </View>

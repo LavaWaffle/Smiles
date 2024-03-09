@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import React, { useEffect, useState } from "react";
-import { Stack } from "expo-router";
+import { Stack, router } from "expo-router";
 import { Image, ImageBackground } from "expo-image";
 import { Chip } from "./discover";
 import { FlashList } from "@shopify/flash-list";
@@ -104,7 +104,12 @@ const create = () => {
           ),
           headerRight: () => (
             <Pressable
-              onPress={() => {}}
+              onPress={() => {
+                router.push({
+                  pathname: "/discover",
+                  params: { text: text, image: capturedImage.uri },
+                });
+              }}
               className="bg-[#F62E8E] py-1 px-3 rounded-full mr-2"
             >
               <Text
@@ -151,7 +156,7 @@ const create = () => {
         <View className="w-full h-10">
           <FlashList
             data={chipData}
-            keyExtractor={(item) => item}
+            keyExtractor={(item) => item + "saff"}
             horizontal={true}
             showsHorizontalScrollIndicator={false}
             estimatedItemSize={36}
@@ -195,7 +200,7 @@ const create = () => {
               if (permission.granted && camera) {
                 // take picture
                 camera.takePictureAsync().then((pic) => {
-                  console.log(pic);
+                  // console.log(pic);
                   setPreviewVisible(true);
                   setCapturedImage(pic);
                   borderColorProgress.value = withTiming(1, { duration: 500 });
