@@ -1,4 +1,9 @@
-import { useEffect, useState } from "react";
+import {
+  JSXElementConstructor,
+  ReactElement,
+  useEffect,
+  useState,
+} from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {
   TextInput,
@@ -12,6 +17,9 @@ import {
 import { Image } from "expo-image";
 import { Feather, Entypo, AntDesign } from "@expo/vector-icons";
 import Animated, {
+  FadeIn,
+  FadeOut,
+  LinearTransition,
   ReduceMotion,
   interpolateColor,
   useAnimatedStyle,
@@ -19,7 +27,7 @@ import Animated, {
   withSpring,
   withTiming,
 } from "react-native-reanimated";
-import { FlashList } from "@shopify/flash-list";
+import { FlashList, ListRenderItemInfo } from "@shopify/flash-list";
 
 import Carousel from "react-native-reanimated-carousel";
 import { AVPlaybackSource, Video } from "expo-av";
@@ -528,9 +536,106 @@ export function Post(props: FuncPost) {
   );
 }
 
+type AcountTagProps = {
+  profilePic: NodeRequire;
+  name: string;
+  description: string;
+  isAccount: boolean;
+};
+
+const allAcountTags: AcountTagProps[] = [
+  {
+    isAccount: true,
+    profilePic: require("assets/discover/accounts/Account1.png"),
+    name: "Jessica Thompson",
+    description: "I love to paint and draw!",
+  },
+  {
+    isAccount: true,
+    profilePic: require("assets/discover/accounts/Account2.png"),
+    name: "Brandon Loia",
+    description: "I love to code and build robots!",
+  },
+  {
+    isAccount: true,
+    profilePic: require("assets/discover/accounts/Account3.png"),
+    name: "Kat Williams",
+    description: "I love to play sports and workout!",
+  },
+  {
+    isAccount: false,
+    profilePic: require("assets/discover/accounts/Tag.svg"),
+    name: "FBLA",
+    description: "209 posts",
+  },
+  {
+    isAccount: false,
+    profilePic: require("assets/discover/accounts/Tag.svg"),
+    name: "Robotics",
+    description: "10 posts",
+  },
+  {
+    isAccount: false,
+    profilePic: require("assets/discover/accounts/Tag.svg"),
+    name: "Football",
+    description: "324 posts",
+  },
+];
+
+function AcountTag(props: AcountTagProps) {
+  const { profilePic, name, description } = props;
+
+  return (
+    <Animated.View className="w-full" entering={FadeIn} exiting={FadeOut}>
+      {/* main content */}
+      <View className="w-[90%] mx-auto pt-4 flex flex-row ">
+        {/* profile pic */}
+        <Image
+          source={profilePic as unknown as string}
+          style={{ width: 42, aspectRatio: 1 }}
+        />
+
+        {/* spacer */}
+        <View className="w-4" />
+
+        {/* name and description */}
+        <View>
+          <Text
+            style={{
+              fontFamily: "Poppins_400Regular",
+              fontSize: 20,
+              color: "#ECEBED",
+            }}
+          >
+            {name}
+          </Text>
+
+          {/* spacer */}
+          <View className="h-2" />
+
+          <Text
+            style={{
+              fontFamily: "Poppins_200ExtraLight",
+              fontSize: 14,
+              color: "#727477",
+            }}
+          >
+            {description}
+          </Text>
+        </View>
+      </View>
+
+      {/* spacer */}
+      <View className="h-2" />
+      {/* bar */}
+      <View className="w-screen h-1 bg-[#323436]" />
+    </Animated.View>
+  );
+}
+
 const discover = () => {
   const [searchPhrase, setSearchPhrase] = useState("");
-  const [clicked, setClicked] = useState(false);
+  const [clicked, setClicked] = useState(true);
   const [selectedChip, setSelectedChip] = useState("All");
 
   useEffect(() => {
@@ -540,8 +645,56 @@ const discover = () => {
     setClicked(false);
   }, [selectedChip]);
 
+  const postTranslateY = useSharedValue(0);
+  const miniPageHeight = useSharedValue(0);
+  const barHeight = useSharedValue(0);
+  // get the height of the screen
+  const screenHeight = Dimensions.get("window").height;
+  useEffect(() => {
+    postTranslateY.value = withTiming(clicked ? screenHeight : 0, {
+      duration: 500,
+    });
+    miniPageHeight.value = withTiming(clicked ? screenHeight : 0, {
+      duration: 500,
+    });
+    barHeight.value = withTiming(clicked ? 2 : 0, {
+      duration: 500,
+    });
+    // console.log(clicked);
+  }, [clicked]);
+
+  const [searchOptions, setSearchOptions] = useState<"Accounts" | "Tags">(
+    "Accounts"
+  );
+
+  const barTranslateX = useSharedValue(0);
+  const screenWidth = Dimensions.get("window").width;
+  useEffect(() => {
+    barTranslateX.value = withTiming(
+      searchOptions === "Accounts" ? 0 : screenWidth * 0.5,
+      {
+        duration: 500,
+      }
+    );
+  }, [searchOptions]);
+
+  const [searchResults, setSearchResults] =
+    useState<AcountTagProps[]>(allAcountTags);
+  useEffect(() => {
+    setSearchResults(
+      allAcountTags.filter((item) => {
+        if (searchOptions === "Accounts" && !item.isAccount) return false;
+        if (searchOptions === "Tags" && item.isAccount) return false;
+        return (item.name + item.description)
+          .toLowerCase()
+          .includes(searchPhrase.toLowerCase());
+      })
+    );
+    // console.log(searchResults);
+  }, [searchOptions, searchPhrase]);
+
   return (
-    <SafeAreaView className="flex flex-col h-full bg-green-500 border-10 border-blue-500">
+    <SafeAreaView className="flex flex-col h-full">
       <SearchBar
         searchPhrase={searchPhrase}
         setSearchPhrase={setSearchPhrase}
@@ -549,42 +702,113 @@ const discover = () => {
         setClicked={setClicked}
       />
 
-      {/* Chips */}
-      <View className="mt-1">
-        <FlatList
-          data={chipData}
-          horizontal={true}
-          showsHorizontalScrollIndicator={false}
-          // estimatedItemSize={chipData.length}
-          renderItem={({ item, index }) => (
-            <Chip
-              text={item}
-              first={index === 0}
-              clicked={selectedChip == item}
-              onClick={() => {
-                // console.log(item);
-                setSelectedChip(item);
+      {/* profile and tags view */}
+      <Animated.View
+        className="w-screen"
+        style={{
+          height: miniPageHeight,
+          backgroundColor: "#181A1C",
+        }}
+      >
+        {/* Accounts vs Tags switcher */}
+        <View className="flex flex-row">
+          {/* Accounts */}
+          <Pressable
+            onPress={() => {
+              setSearchOptions("Accounts");
+            }}
+            className="w-1/2 py-3 flex items-center justify-center"
+          >
+            <Text
+              style={{
+                fontFamily: "Poppins_500Medium",
               }}
-            />
-          )}
-        />
-      </View>
+              className="text-[#ECEBED] text-[14px]"
+            >
+              Accounts
+            </Text>
+          </Pressable>
 
-      {/* spacer */}
-      <View className="h-4" />
+          {/* Tags */}
+          <Pressable
+            onPress={() => setSearchOptions("Tags")}
+            className="w-1/2 py-3 flex items-center justify-center"
+          >
+            <Text
+              style={{
+                fontFamily: "Poppins_500Medium",
+              }}
+              className="text-[#ECEBED] text-[14px]"
+            >
+              Tags
+            </Text>
+          </Pressable>
+        </View>
 
-      {/* Posts */}
-      <View className="w-full h-full">
-        <FlashList
-          data={postData}
-          showsVerticalScrollIndicator={false}
-          horizontal={false}
-          estimatedItemSize={postData.length}
-          pagingEnabled={true}
-          snapToInterval={300}
-          renderItem={({ item }) => <Post {...item} />}
+        {/* Bar */}
+        <Animated.View
+          style={{
+            width: "50%",
+            height: barHeight,
+            transform: [{ translateX: barTranslateX }],
+          }}
+          className="bg-[#ECEBED]"
         />
-      </View>
+
+        {/* Profile and Tags */}
+        {clicked && (
+          <FlashList
+            data={searchResults}
+            keyExtractor={(item) => item.description}
+            estimatedItemSize={allAcountTags.length}
+            renderItem={({ item }) => <AcountTag {...item} />}
+          />
+        )}
+      </Animated.View>
+
+      {/* main discover view */}
+      <Animated.View
+        style={{
+          transform: [{ translateY: postTranslateY }],
+        }}
+      >
+        {/* Chips */}
+        <View className="mt-1">
+          <FlatList
+            data={chipData}
+            horizontal={true}
+            showsHorizontalScrollIndicator={false}
+            // estimatedItemSize={chipData.length}
+            renderItem={({ item, index }) => (
+              <Chip
+                text={item}
+                first={index === 0}
+                clicked={selectedChip == item}
+                onClick={() => {
+                  // console.log(item);
+                  setSelectedChip(item);
+                }}
+              />
+            )}
+          />
+        </View>
+
+        {/* spacer */}
+        <View className="h-4" />
+
+        {/* Posts */}
+        <View className="w-full h-full">
+          <FlashList
+            data={postData}
+            showsVerticalScrollIndicator={false}
+            horizontal={false}
+            estimatedItemSize={postData.length}
+            pagingEnabled={true}
+            snapToInterval={300}
+            renderItem={({ item }) => <Post {...item} />}
+          />
+        </View>
+      </Animated.View>
     </SafeAreaView>
   );
 };
