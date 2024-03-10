@@ -509,8 +509,8 @@ export function Post(props: FuncPost) {
                 { duration: 250 }
               );
               const downloadResumable = FileSystem.createDownloadResumable(
-                "https://smb.ibsrv.net/imageresizer/image/blog_images/1200x1200/59846/176287/0044181001582748537.jpg",
-                FileSystem.documentDirectory + "arch.jpg"
+                "https://media.discordapp.net/attachments/829521009102815252/1216159812379873300/image.png?ex=65ff6016&is=65eceb16&hm=899fcd3fabc3ba99dd57255d9d65202c30fb0a4e6ff1db75163e374b23e41bbd&=&format=webp&quality=lossless&width=427&height=411",
+                FileSystem.documentDirectory + "arch.webp"
               );
 
               try {
@@ -731,7 +731,7 @@ const discover = () => {
             likes: "0",
             comments: "0",
             shares: "0",
-            profilePic: require("assets/discover/ProfilePic2.png"),
+            profilePic: require("assets/create/ProfilePic.png"),
             content: [[false, local.image as string]],
           },
           ...postData,

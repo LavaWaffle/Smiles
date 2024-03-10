@@ -11,7 +11,7 @@ export default () => {
   const [prevState, setPrevState] = useState<number>(0);
   return (
     <Tabs
-      initialRouteName="discover"
+      initialRouteName="customize"
       screenListeners={{
         state: (e: any) => {
           const newTabIndex = e.data.state.index;
@@ -78,6 +78,7 @@ export default () => {
         name="messagesNfriends"
         options={{
           tabBarShowLabel: false,
+          headerShown: false,
           tabBarIcon: ({ focused, color, size }) => (
             <TabBarIconImage
               focused={focused}
@@ -92,6 +93,8 @@ export default () => {
         name="customize"
         options={{
           tabBarShowLabel: false,
+          headerShown: false,
+
           tabBarIcon: ({ focused, color, size }) => (
             <TabBarIconImage
               focused={focused}

@@ -136,7 +136,7 @@ const create = () => {
           <Image
             style={{
               width: 40,
-              aspectRatio: 1,
+              height: 40,
               marginRight: 10,
             }}
             source={require("assets/create/ProfilePic.png")}
@@ -237,6 +237,7 @@ const create = () => {
               />
             ) : (
               <Camera
+                autoFocus={true}
                 type={type}
                 ref={(r) => {
                   camera = r;
