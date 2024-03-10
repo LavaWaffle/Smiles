@@ -1,7 +1,6 @@
 import { View, Text, Pressable, Dimensions } from "react-native";
 import React, { useEffect, useState } from "react";
 import { Image } from "expo-image";
-import { AnimatedScrollView } from "react-native-reanimated/lib/typescript/reanimated2/component/ScrollView";
 import Animated, {
   FadeIn,
   interpolateColor,
@@ -11,10 +10,12 @@ import Animated, {
 } from "react-native-reanimated";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { Feather, Entypo, AntDesign } from "@expo/vector-icons";
+import { Link, Stack } from "expo-router";
 
 const AniFeather = Animated.createAnimatedComponent(Feather);
 const AniEntypo = Animated.createAnimatedComponent(Entypo);
 const AniAntDesign = Animated.createAnimatedComponent(AntDesign);
+const AnimatedImage = Animated.createAnimatedComponent(Image);
 
 const customize = () => {
   const barTranslateX = useSharedValue(0);
@@ -60,27 +61,36 @@ const customize = () => {
   let initialX = 0;
 
   return (
-    <View>
+    <View className="bg-[#181A1C]">
+      <Stack.Screen
+        options={{
+          headerShown: false,
+        }}
+      />
       <View className="relative">
         <Image
-          source={require("assets/customize/Banner.png")}
+          source={require("assets/feed/Card1.png")}
           style={{
             width: "100%",
-            height: 175,
+            height: 150,
           }}
         />
-        <View className="absolute bottom-0 left-1/2 translate-x-[-72.5] translate-y-[72.5]">
-          <Image
-            source={require("assets/customize/ProfilePic.png")}
+        <Animated.View
+          //   sharedTransitionTag="profilePic"
+          className="absolute bottom-0 left-1/2 translate-x-[-72.5] translate-y-[72.5]"
+        >
+          <Animated.Image
+            sharedTransitionTag="profilePic"
+            source={require("assets/feed/Profile1.png")}
             style={{
-              aspectRatio: 1,
+              height: 145,
               width: 145,
             }}
           />
-        </View>
-        <View className="absolute bottom-0 left-1/2 bg-white rounded-full translate-x-[40] translate-y-[70]">
+        </Animated.View>
+        <View className="absolute bottom-0 left-1/2 translate-x-[35] translate-y-[65]">
           <Image
-            source={require("assets/customize/Plus.svg")}
+            source={require("assets/profile/Check.png")}
             style={{ aspectRatio: 1, width: 35 }}
           />
         </View>
@@ -89,12 +99,13 @@ const customize = () => {
       {/* spacer */}
       <View style={{ height: 145 / 2 + 18 }} />
 
-      <Text
+      <Animated.Text
         style={{ fontFamily: "Poppins_600SemiBold" }}
         className="text-center text-white text-[18px]"
+        // sharedTransitionTag="name"
       >
-        Jessica Thompson
-      </Text>
+        Kat Williams
+      </Animated.Text>
 
       {/* spacer */}
       <View style={{ height: 2 }} />
@@ -113,7 +124,7 @@ const customize = () => {
         style={{ fontFamily: "Poppins_400Regular" }}
         className="text-center text-[#ECEBED] text-[13px]"
       >
-        Writer by Profession. Artist by Passion!
+        I design experiences mostly. I also sometimes travel.
       </Text>
 
       {/* spacer */}
@@ -122,7 +133,7 @@ const customize = () => {
       {/* rando stuff idk man */}
       <View className="flex flex-row justify-between items-center w-[90%] mx-auto">
         {/* followers */}
-        <View className="w-[57%] flex-row justify-between">
+        <View className="w-[66%] flex-row justify-between">
           <Text
             style={{ fontFamily: "Poppins_500Medium" }}
             className="text-[#727477]"
@@ -131,7 +142,7 @@ const customize = () => {
               style={{ fontFamily: "Poppins_600SemiBold" }}
               className="text-white"
             >
-              2,467
+              6.2M
             </Text>
             {"\n"}
             Followers
@@ -145,7 +156,7 @@ const customize = () => {
               style={{ fontFamily: "Poppins_600SemiBold" }}
               className="text-white"
             >
-              1,589
+              10.8k
             </Text>
             {"\n"}
             Following
@@ -153,18 +164,67 @@ const customize = () => {
         </View>
 
         {/* edit */}
-        <View className="px-3 py-2 rounded-full border-2 border-[#727477]">
+        <View className="px-4 py-2 rounded-full bg-[#F62E8E]">
           <Text
             style={{ fontFamily: "Poppins_600SemiBold" }}
             className="text-white text-[14px] text-center"
           >
-            Edit Profile
+            Follow
           </Text>
         </View>
       </View>
 
       {/* spacer */}
       <View style={{ height: 10 }} />
+
+      {/* more shit */}
+      <View className="flex flex-row w-[90%]  mx-auto justify-between itemscenter">
+        <View className="flex items-center flex-row">
+          <Image
+            source={require("assets/profile/Group.png")}
+            style={{
+              width: 75,
+              height: 32,
+            }}
+          />
+          {/* spacer */}
+          <View className="w-2" />
+
+          <Text
+            style={{
+              fontFamily: "Poppins_300Light",
+            }}
+            className="text-white text-[13px] opacity-70"
+          >
+            Mutuals
+          </Text>
+        </View>
+
+        {/* right */}
+        <Link href="/classes" asChild>
+          <Pressable className="bg-[#2E8AF6] active:bg-[#4b97ed] transition-colors px-4 py-2 rounded-full flex-row items-center">
+            <Text
+              style={{ fontFamily: "Poppins_600SemiBold" }}
+              className="text-white text-[14px] text-center"
+            >
+              Classes
+            </Text>
+            {/* spacer */}
+            <View className="w-2" />
+            <Image
+              source={require("assets/profile/Classes.png")}
+              style={{
+                marginTop: -4,
+                width: 30,
+                aspectRatio: 1,
+              }}
+            />
+          </Pressable>
+        </Link>
+      </View>
+
+      {/* spacer */}
+      <View className="h-4" />
 
       {/* slider */}
       <View className="w-[80%] mx-auto flex flex-row justify-between items-center">
@@ -228,7 +288,7 @@ const customize = () => {
             }}
             className="text-white text-[16px] ml-5"
           >
-            Interests
+            Languages
           </Text>
 
           {/* spacer */}
@@ -237,7 +297,7 @@ const customize = () => {
           <View className="flex items-center justify-center">
             <View className="flex-row items-center">
               <Image
-                source={require("assets/customize/EmojiCS.png")}
+                source={require("assets/customize/EmojiBrit.png")}
                 style={{
                   width: 40,
                   aspectRatio: 1,
@@ -251,7 +311,7 @@ const customize = () => {
                 style={{ fontFamily: "Poppins_400Regular" }}
                 className="text-[#ECEBED] text-[16px] w-[55%] text-center"
               >
-                Computer Science
+                English
               </Text>
             </View>
           </View>
@@ -262,7 +322,7 @@ const customize = () => {
           <View className="flex items-center justify-center">
             <View className="flex-row items-center">
               <Image
-                source={require("assets/customize/EmojiRuler.png")}
+                source={require("assets/customize/EmojiItalian.png")}
                 style={{
                   width: 40,
                   aspectRatio: 1,
@@ -276,7 +336,7 @@ const customize = () => {
                 style={{ fontFamily: "Poppins_400Regular" }}
                 className="text-[#ECEBED] text-[16px] w-[55%] text-center"
               >
-                Math
+                Italian
               </Text>
             </View>
           </View>
@@ -292,13 +352,13 @@ const customize = () => {
           {/* view */}
           <View className="w-[90%] mx-auto mt-0">
             <MyPost
-              author="Jessica Thomson"
-              comments="2.1k"
-              description="Going on vacation! Catch you all in 10 days. No call!!!!!"
-              likes="3.2k"
-              profilePic={require("assets/customize/ProfilePic.png")}
-              shares="1.5k"
-              timeAgo="2h ago"
+              author="Kat Williams"
+              comments="1.2k"
+              description="I can't believe were going to FBLA tomorrow! I'm so excited to see everyone there!"
+              likes="5k"
+              profilePic={require("assets/feed/Profile1.png")}
+              shares="3.5k"
+              timeAgo="1d ago"
             />
           </View>
         </Animated.View>
@@ -324,7 +384,7 @@ const customize = () => {
           <View className="flex items-center justify-center">
             <View className="flex-row items-center">
               <Image
-                source={require("assets/customize/DocHat.png")}
+                source={require("assets/customize/DocMusic.png")}
                 style={{
                   width: 40,
                   aspectRatio: 1,
@@ -339,13 +399,13 @@ const customize = () => {
                   style={{ fontFamily: "Poppins_700Bold" }}
                   className="text-white text-[15px] text-left"
                 >
-                  President - FBLA
+                  Orchestra
                 </Text>
                 <Text
                   style={{ fontFamily: "Poppins_400Regular" }}
-                  className="text-[#C4C4C4] text-[13px] text-center"
+                  className="text-[#C4C4C4] text-[13px] text-left"
                 >
-                  Money • Present (3 years)
+                  14 • Present (10 years)
                 </Text>
               </View>
             </View>
@@ -357,7 +417,7 @@ const customize = () => {
           <View className="flex items-center justify-center">
             <View className="flex-row items-center">
               <Image
-                source={require("assets/customize/DocFootball.png")}
+                source={require("assets/customize/DocBlood.png")}
                 style={{
                   width: 40,
                   aspectRatio: 1,
@@ -372,13 +432,13 @@ const customize = () => {
                   style={{ fontFamily: "Poppins_700Bold" }}
                   className="text-white text-[15px] text-left"
                 >
-                  Football team
+                  Red Cross Society
                 </Text>
                 <Text
                   style={{ fontFamily: "Poppins_400Regular" }}
                   className="text-[#C4C4C4] text-[13px] text-left"
                 >
-                  JV • Present (3 years)
+                  20 • Present (4 years)
                 </Text>
               </View>
             </View>
@@ -562,12 +622,6 @@ function MyPost(props: FuncPost) {
           </Pressable>
         </View>
       </View>
-
-      {/* spacer */}
-      <View className="h-5" />
-
-      {/* Bar */}
-      <View className="w-[200vw] ml-[-5%] h-[1px] bg-[#323436]" />
     </Animated.View>
   );
 }

@@ -69,6 +69,8 @@ export default feed;
 
 import { Image } from "expo-image";
 import { router } from "expo-router";
+import Animated from "react-native-reanimated";
+const AnimatedImage = Animated.createAnimatedComponent(Image);
 
 function Card(props: {
   height: number;
@@ -116,9 +118,16 @@ function Card(props: {
           contentFit="cover"
         />
         {/* PROFILE */}
-        <View className="absolute top-[1.5rem] right-0 left-0 bottom-0 justify-center items-center">
-          <Image style={{ width: 150, height: 150 }} source={profileImgStr} />
-        </View>
+        <Animated.View
+          // sharedTransitionTag="profilePic"
+          className="absolute top-[1.5rem] right-0 left-0 bottom-0 justify-center items-center"
+        >
+          <Animated.Image
+            style={{ width: 150, height: 150 }}
+            sharedTransitionTag="profilePic"
+            source={profileImgStr as any}
+          />
+        </Animated.View>
         {/* HAMBURGER MENU */}
         <View className="absolute top-12 right-3">
           <Image
@@ -130,12 +139,13 @@ function Card(props: {
       {/* spacer */}
       <View className="h-5" />
       {/* Name */}
-      <Text
+      <Animated.Text
         style={{ fontFamily: "Poppins_600SemiBold" }}
         className="text-white text-[30px]"
+        // sharedTransitionTag="name"
       >
         {name}
-      </Text>
+      </Animated.Text>
       {/* spacer */}
       <View className="h-[-10px]" />
       {/* Ubicaci'on */}
@@ -160,7 +170,11 @@ function Card(props: {
       <Pressable
         onPress={(e) => {
           console.log(name);
-          if (!isPerson) router.push("/shareResumate");
+          if (!isPerson) {
+            router.push("/shareResumate");
+          } else {
+            router.push("/viewProfile");
+          }
         }}
         className={`${
           isPerson

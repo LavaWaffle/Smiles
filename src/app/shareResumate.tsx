@@ -4,13 +4,36 @@ import { Image } from "expo-image";
 import { ImageZoom } from "@likashefqet/react-native-image-zoom";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import Animated, { useSharedValue, withTiming } from "react-native-reanimated";
+import LottieView from "lottie-react-native";
+import { useRef } from "react";
 
 export default function ShareResume() {
   const translateY = useSharedValue(100);
+  const confettiRef = useRef<LottieView>(null);
+
+  function triggerConfetti() {
+    confettiRef.current?.play(0);
+  }
 
   return (
     <GestureHandlerRootView>
       <View className="relative">
+        <LottieView
+          ref={confettiRef}
+          source={require("assets/Confetti.json")}
+          autoPlay={false}
+          loop={false}
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            zIndex: 1000,
+            pointerEvents: "none",
+          }}
+          resizeMode="cover"
+        />
         <Animated.View
           style={{
             transform: [{ translateY }],
@@ -89,6 +112,10 @@ export default function ShareResume() {
           <Pressable
             onPress={() => {
               translateY.value = withTiming(-350, { duration: 750 });
+
+              setTimeout(() => {
+                triggerConfetti();
+              }, 250);
 
               setTimeout(() => {
                 translateY.value = withTiming(100, { duration: 750 });
