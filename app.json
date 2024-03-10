@@ -3,6 +3,7 @@
     "scheme": "acme",
     "userInterfaceStyle": "automatic",
     "orientation": "default",
+    "icon": "./assets/Icon.png",
     "web": {
       "output": "static",
       "bundler": "metro"
@@ -12,6 +13,12 @@
         "expo-router",
         {
           "origin": "https://n"
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "The app accesses your photos to let you share them with your friends."
         }
       ],
       [

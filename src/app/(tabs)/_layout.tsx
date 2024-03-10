@@ -11,7 +11,6 @@ export default () => {
   const [prevState, setPrevState] = useState<number>(0);
   return (
     <Tabs
-      initialRouteName="feed"
       screenListeners={{
         state: (e: any) => {
           const newTabIndex = e.data.state.index;
